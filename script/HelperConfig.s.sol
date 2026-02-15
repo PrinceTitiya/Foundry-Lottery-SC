@@ -36,15 +36,18 @@ contract HelperConfig is CodeConstants, Script {
     mapping(uint256 chainId => NetworkConfig) public networkConfigs; //mapping (chainId => NetWorkConfig)
 
     constructor() {
-        networkConfigs[ETH_SEPOLIA_CHAIN_ID] = getSepoliaEthConfig(); // set default to ETH => networkConfigs[11155111] => get Sepolia config
+        // Don't initialize here - will be loaded lazily from env vars when needed
     }
 
     function getConfigByChainId(
         //gets config function bt passing the chainid
         uint256 chainId
     ) public returns (NetworkConfig memory) {
-        if (networkConfigs[chainId].vrfCoordinator != address(0)) {
-            // if vrfCoordinator address isn't zero in networkconfigs, gets the config of (11155111)
+        if (chainId == ETH_SEPOLIA_CHAIN_ID) {
+            // Load Sepolia config from env vars (lazy initialization)
+            if (networkConfigs[chainId].vrfCoordinator == address(0)) {
+                networkConfigs[chainId] = getSepoliaEthConfig();
+            }
             return networkConfigs[chainId];
         } else if (chainId == LOCAL_CHAIN_ID) {
             // else deploy or get the already deployed mock, and its network config
@@ -59,8 +62,22 @@ contract HelperConfig is CodeConstants, Script {
         return getConfigByChainId(block.chainid);
     }
 
-    function getSepoliaEthConfig() public pure returns (NetworkConfig memory) {
+    function getSepoliaEthConfig() public view returns (NetworkConfig memory) {
         // pre-defined sepolia config
+        // Read sensitive values from environment variables
+        uint256 subscriptionId = vm.envOr("VRF_SUBSCRIPTION_ID", uint256(0));
+        address account = vm.envOr("DEPLOYER_ACCOUNT", address(0));
+
+        // Validate that required environment variables are set
+        require(
+            subscriptionId != 0,
+            "HelperConfig: VRF_SUBSCRIPTION_ID not set in .env"
+        );
+        require(
+            account != address(0),
+            "HelperConfig: DEPLOYER_ACCOUNT not set in .env"
+        );
+
         return
             NetworkConfig({
                 entranceFee: .01 ether, // 0.01 ETH
@@ -68,9 +85,9 @@ contract HelperConfig is CodeConstants, Script {
                 vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
                 gasLane: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
                 callbackGasLimit: 500000,
-                subscriptionId: 74558116438819495248462796243898809603554892099801083171951221399448263303666,
+                subscriptionId: subscriptionId,
                 link: 0x779877A7B0D9E8603169DdbD7836e478b4624789, // link token contract
-                account: 0x6789fb087E2966ee52b707D7187dC4eD673D58C8
+                account: account
             });
     }
 

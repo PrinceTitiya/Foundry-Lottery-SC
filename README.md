@@ -169,13 +169,36 @@ forge build
 
 ### Environment Variables
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the root directory with the following variables:
 
+**Required for Sepolia Deployment:**
 ```bash
+# RPC URL for Sepolia testnet
 SEPOLIA_RPC_URL=<your-sepolia-rpc-url>
+
+# Your deployer account private key (without 0x prefix)
 PRIVATE_KEY=<your-private-key>
+
+# Etherscan API key for contract verification
 ETHERSCAN_API_KEY=<your-etherscan-api-key>
+
+# Chainlink VRF Subscription ID (get from https://vrf.chain.link/)
+VRF_SUBSCRIPTION_ID=<your-vrf-subscription-id>
+
+# Deployer account address (must match PRIVATE_KEY)
+DEPLOYER_ACCOUNT=<your-deployer-address>
 ```
+
+**Example `.env` file:**
+```bash
+SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_PROJECT_ID
+PRIVATE_KEY=your_private_key_here_without_0x
+ETHERSCAN_API_KEY=your_etherscan_api_key
+VRF_SUBSCRIPTION_ID=
+DEPLOYER_ACCOUNT=
+```
+
+⚠️ **Security Note**: Never commit your `.env` file to version control. It's already included in `.gitignore`.
 
 ### Network Configuration
 
@@ -184,22 +207,11 @@ The `HelperConfig.s.sol` contract handles network-specific configurations:
 - **Sepolia Testnet**: Pre-configured with Chainlink VRF v2.5 addresses
 - **Local Anvil**: Automatically deploys mocks for testing
 
-To modify network settings, edit `HelperConfig.s.sol`:
+**Important**: The `subscriptionId` and `account` are now read from environment variables for security. Set them in your `.env` file as `VRF_SUBSCRIPTION_ID` and `DEPLOYER_ACCOUNT`.
 
-```solidity
-function getSepoliaEthConfig() public pure returns (NetworkConfig memory) {
-    return NetworkConfig({
-        entranceFee: .01 ether,
-        interval: 30, // seconds
-        vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
-        gasLane: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
-        callbackGasLimit: 500000,
-        subscriptionId: <your-subscription-id>,
-        link: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
-        account: <your-deployer-address>
-    });
-}
-```
+The network configuration is handled automatically by `HelperConfig.s.sol`:
+- **Sepolia**: Reads sensitive values from environment variables
+- **Local Anvil**: Uses default mock values (no env vars needed)
 
 ## 💻 Usage
 
@@ -282,8 +294,14 @@ The test suite includes:
    - Fund it with LINK tokens
    - Note your subscription ID
 
-2. **Update HelperConfig**:
-   - Add your subscription ID to `getSepoliaEthConfig()`
+2. **Configure Environment Variables**:
+   - Create a `.env` file in the root directory
+   - Add all required variables (see [Configuration](#-configuration) section):
+     - `SEPOLIA_RPC_URL`
+     - `PRIVATE_KEY`
+     - `ETHERSCAN_API_KEY`
+     - `VRF_SUBSCRIPTION_ID` (from step 1)
+     - `DEPLOYER_ACCOUNT` (address matching your PRIVATE_KEY)
 
 3. **Deploy**:
 ```bash
