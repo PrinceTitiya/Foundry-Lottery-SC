@@ -42,7 +42,10 @@ contract HelperConfig is CodeConstants, Script {
     function getConfigByChainId(
         //gets config function bt passing the chainid
         uint256 chainId
-    ) public returns (NetworkConfig memory) {
+    )
+        public
+        returns (NetworkConfig memory)
+    {
         if (chainId == ETH_SEPOLIA_CHAIN_ID) {
             // Load Sepolia config from env vars (lazy initialization)
             if (networkConfigs[chainId].vrfCoordinator == address(0)) {
@@ -69,26 +72,19 @@ contract HelperConfig is CodeConstants, Script {
         address account = vm.envOr("DEPLOYER_ACCOUNT", address(0));
 
         // Validate that required environment variables are set
-        require(
-            subscriptionId != 0,
-            "HelperConfig: VRF_SUBSCRIPTION_ID not set in .env"
-        );
-        require(
-            account != address(0),
-            "HelperConfig: DEPLOYER_ACCOUNT not set in .env"
-        );
+        require(subscriptionId != 0, "HelperConfig: VRF_SUBSCRIPTION_ID not set in .env");
+        require(account != address(0), "HelperConfig: DEPLOYER_ACCOUNT not set in .env");
 
-        return
-            NetworkConfig({
-                entranceFee: .01 ether, // 0.01 ETH
-                interval: 30, //30 seconds
-                vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
-                gasLane: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
-                callbackGasLimit: 500000,
-                subscriptionId: subscriptionId,
-                link: 0x779877A7B0D9E8603169DdbD7836e478b4624789, // link token contract
-                account: account
-            });
+        return NetworkConfig({
+            entranceFee: 0.01 ether, // 0.01 ETH
+            interval: 30, //30 seconds
+            vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
+            gasLane: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae,
+            callbackGasLimit: 500000,
+            subscriptionId: subscriptionId,
+            link: 0x779877A7B0D9E8603169DdbD7836e478b4624789, // link token contract
+            account: account
+        });
     }
 
     function getOrCreateAnvilEthConfig() public returns (NetworkConfig memory) {

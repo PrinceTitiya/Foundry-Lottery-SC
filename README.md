@@ -292,7 +292,7 @@ The test suite includes:
 1. **Set up Chainlink VRF Subscription**:
    - Create a subscription on [Chainlink VRF](https://vrf.chain.link/)
    - Fund it with LINK tokens
-   - Note your subscription ID
+   - Note your subscriptionID and add as enviroment variable
 
 2. **Configure Environment Variables**:
    - Create a `.env` file in the root directory
