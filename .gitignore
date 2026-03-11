@@ -3,9 +3,7 @@ cache/
 out/
 
 # Dependencies - ignore installed packages, keep only forge-std (default Foundry library)
-lib/chainlink-brownie-contracts/
-lib/foundry-devops/
-lib/solmate/
+lib/
 
 # Ignores development broadcast logs
 broadcast/

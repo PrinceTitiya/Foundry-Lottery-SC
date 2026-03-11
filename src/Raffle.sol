@@ -28,12 +28,12 @@ contract Raffle is VRFConsumerBaseV2Plus {
     uint32 private constant NUM_WORDS = 1;
 
     uint256 private immutable i_entranceFee;
-    uint256 private immutable i_interval; // duration of the lottery in seconds
+    uint256 private immutable i_interval;  // duration of the lottery in seconds
     bytes32 private immutable i_keyHash;
     uint256 private immutable i_subscriptionId;
     uint32 private immutable i_callbackGasLimit;
 
-    address payable[] private s_players; // address gets paid at winning
+    address payable[] private s_players;  // address gets paid at winning
     uint256 private s_lastTimeStamp;
     address private s_recentWinner;
     RaffleState private s_raffleState;
