@@ -6,6 +6,7 @@ out/
 lib/chainlink-brownie-contracts/
 lib/foundry-devops/
 lib/solmate/
+lib/
 
 # Ignores development broadcast logs
 broadcast/
